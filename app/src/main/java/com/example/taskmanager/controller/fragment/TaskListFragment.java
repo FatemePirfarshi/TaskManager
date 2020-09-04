@@ -1,13 +1,17 @@
 package com.example.taskmanager.controller.fragment;
 
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,9 +40,9 @@ public class TaskListFragment extends Fragment {
         String name = getActivity().getIntent().
                 getStringExtra(TaskDetailFragment.EXTRA_USER_NAME);
         int number = (int) getActivity().getIntent().
-                getIntExtra(TaskDetailFragment.EXTRA_NUMBER_OF_TASKS ,0);
+                getIntExtra(TaskDetailFragment.EXTRA_NUMBER_OF_TASKS, 0);
 
-        mRepository.setDetail(name , number);
+        mRepository.setDetail(name, number);
     }
 
     @Override
@@ -58,15 +62,20 @@ public class TaskListFragment extends Fragment {
     }
 
     private void initViews() {
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        else
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+
         TaskAdapter taskAdapter = new TaskAdapter(mRepository.getTasks());
         mRecyclerView.setAdapter(taskAdapter);
     }
 
-    public class TaskHolder extends RecyclerView.ViewHolder{
+    public class TaskHolder extends RecyclerView.ViewHolder {
 
         private TextView mTextViewUsername;
         private TextView mTextViewState;
+        private RelativeLayout mRootLayout;
 
         private Task mTask;
 
@@ -74,9 +83,10 @@ public class TaskListFragment extends Fragment {
             super(itemView);
             mTextViewUsername = itemView.findViewById(R.id.row_item_user_name);
             mTextViewState = itemView.findViewById(R.id.row_item_number);
+            mRootLayout = itemView.findViewById(R.id.row_root_layout);
         }
 
-        public void bindTask(Task task){
+        public void bindTask(Task task) {
             mTask = task;
 
             mTextViewUsername.setText(task.getName());
@@ -84,7 +94,7 @@ public class TaskListFragment extends Fragment {
         }
     }
 
-    public class TaskAdapter extends RecyclerView.Adapter<TaskHolder>{
+    public class TaskAdapter extends RecyclerView.Adapter<TaskHolder> {
 
         private List<Task> mTasks;
 
@@ -115,9 +125,28 @@ public class TaskListFragment extends Fragment {
             return taskHolder;
         }
 
+        int counter = 0;
+
         @Override
         public void onBindViewHolder(@NonNull TaskHolder holder, int position) {
             Task task = mTasks.get(position);
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                if (position % 2 == 0) {
+                    holder.mRootLayout.setBackgroundColor(Color.parseColor("#AB94D5"));
+                } else {
+                    holder.mRootLayout.setBackgroundColor(Color.parseColor("#F1A0FF"));
+                }
+            } else {
+                if (counter == 4)
+                    counter = 0;
+                if (counter == 0 || counter == 3) {
+                    holder.mRootLayout.setBackgroundColor(Color.parseColor("#AB94D5"));
+                    counter++;
+                } else {
+                    holder.mRootLayout.setBackgroundColor(Color.parseColor("#F1A0FF"));
+                    counter++;
+                }
+            }
             holder.bindTask(task);
         }
     }
