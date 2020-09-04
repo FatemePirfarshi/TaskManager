@@ -15,8 +15,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 public class TaskDetailFragment extends Fragment {
 
-    public static final String EXTRA_USER_NAME = "UserName";
-    public static final String EXTRA_NUMBER_OF_TASKS = "numberOfTasks";
+    public static final String EXTRA_USER_NAME = "com.example.taskmanager.UserName";
+    public static final String EXTRA_NUMBER_OF_TASKS = "com.example.taskmanager.numberOfTasks";
     private TextInputLayout mEditTextUserName;
     private TextInputLayout mEditTextNumber;
     private Button mButtonCreate;
@@ -29,7 +29,6 @@ public class TaskDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -46,6 +45,7 @@ public class TaskDetailFragment extends Fragment {
     private void findViews(View view) {
         mEditTextUserName = view.findViewById(R.id.edittxt_username);
         mEditTextNumber = view.findViewById(R.id.edittxt_number);
+        mButtonCreate = view.findViewById(R.id.btn_create);
     }
 
     private void initViews() {
@@ -56,14 +56,28 @@ public class TaskDetailFragment extends Fragment {
         mButtonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity() , TaskListActivity.class);
 
-                intent.putExtra(EXTRA_USER_NAME,
-                        mEditTextUserName.getEditText().getText().toString());
-                intent.putExtra(EXTRA_NUMBER_OF_TASKS,
-                        Integer.parseInt(mEditTextNumber.getEditText().getText().toString()));
+                if(mEditTextUserName.getEditText().getText().toString().trim().isEmpty()){
+                    mEditTextUserName.setErrorEnabled(true);
+                    mEditTextUserName.setError("Field can not be empty!!");
 
-                startActivity(intent);
+                }else if(mEditTextNumber.getEditText().getText().toString().length() == 0) {
+                    mEditTextUserName.setErrorEnabled(false);
+                    mEditTextNumber.setErrorEnabled(true);
+                    mEditTextNumber.setError("Field can not be empty!!");
+                }else{
+                    mEditTextUserName.setErrorEnabled(false);
+                    mEditTextNumber.setErrorEnabled(false);
+
+                    Intent intent = new Intent(getActivity(), TaskListActivity.class);
+
+                    intent.putExtra(EXTRA_USER_NAME,
+                            mEditTextUserName.getEditText().getText().toString());
+                    intent.putExtra(EXTRA_NUMBER_OF_TASKS,
+                            Integer.parseInt(mEditTextNumber.getEditText().getText().toString()));
+
+                    startActivity(intent);
+                }
             }
         });
     }
