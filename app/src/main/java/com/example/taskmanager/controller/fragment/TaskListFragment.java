@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,7 +26,10 @@ import java.util.List;
 public class TaskListFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
-
+    private Button mButton;
+    private String name;
+    private int number;
+    
     private TaskRepository mRepository;
 
     public TaskListFragment() {
@@ -37,9 +41,9 @@ public class TaskListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mRepository = TaskRepository.getInstance();
 
-        String name = getActivity().getIntent().
+        name = getActivity().getIntent().
                 getStringExtra(TaskDetailFragment.EXTRA_USER_NAME);
-        int number = (int) getActivity().getIntent().
+        number = (int) getActivity().getIntent().
                 getIntExtra(TaskDetailFragment.EXTRA_NUMBER_OF_TASKS, 0);
 
         mRepository.setDetail(name, number);
@@ -53,12 +57,14 @@ public class TaskListFragment extends Fragment {
 
         findViews(view);
         initViews();
+        setListeners();
 
         return view;
     }
 
     private void findViews(View view) {
         mRecyclerView = view.findViewById(R.id.recycler_view_task_list);
+        mButton = view.findViewById(R.id.btn_add);
     }
 
     private void initViews() {
@@ -67,8 +73,24 @@ public class TaskListFragment extends Fragment {
         else
             mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
-        TaskAdapter taskAdapter = new TaskAdapter(mRepository.getTasks());
+        final TaskAdapter taskAdapter = new TaskAdapter(mRepository.getTasks());
         mRecyclerView.setAdapter(taskAdapter);
+
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Task task = new Task();
+                task.setName(name);
+                mRepository.getTasks().add(task);
+                taskAdapter.notifyItemInserted(++number);
+
+            }
+        });
+
+    }
+
+    private void setListeners() {
+
     }
 
     public class TaskHolder extends RecyclerView.ViewHolder {
