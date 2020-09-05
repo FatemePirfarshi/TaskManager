@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -29,7 +30,10 @@ public class TaskListFragment extends Fragment {
     private Button mButton;
     private String name;
     private int number;
-    
+    private int addNumber = number;
+
+    private int counter;
+
     private TaskRepository mRepository;
 
     public TaskListFragment() {
@@ -58,9 +62,9 @@ public class TaskListFragment extends Fragment {
         findViews(view);
         initViews();
         setListeners();
-
         return view;
     }
+
 
     private void findViews(View view) {
         mRecyclerView = view.findViewById(R.id.recycler_view_task_list);
@@ -98,6 +102,7 @@ public class TaskListFragment extends Fragment {
         private TextView mTextViewUsername;
         private TextView mTextViewState;
         private RelativeLayout mRootLayout;
+        private ImageView mImageView;
 
         private Task mTask;
 
@@ -106,6 +111,7 @@ public class TaskListFragment extends Fragment {
             mTextViewUsername = itemView.findViewById(R.id.row_item_user_name);
             mTextViewState = itemView.findViewById(R.id.row_item_number);
             mRootLayout = itemView.findViewById(R.id.row_root_layout);
+            mImageView = itemView.findViewById(R.id.imgview_state);
         }
 
         public void bindTask(Task task) {
@@ -113,6 +119,7 @@ public class TaskListFragment extends Fragment {
 
             mTextViewUsername.setText(task.getName());
             mTextViewState.setText(task.getState().toString());
+            mImageView.setImageResource(task.getImageRes());
         }
     }
 
@@ -146,8 +153,6 @@ public class TaskListFragment extends Fragment {
             TaskHolder taskHolder = new TaskHolder(view);
             return taskHolder;
         }
-
-        int counter = 0;
 
         @Override
         public void onBindViewHolder(@NonNull TaskHolder holder, int position) {
