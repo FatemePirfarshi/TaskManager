@@ -1,5 +1,7 @@
 package com.example.taskmanager.controller.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -26,6 +28,7 @@ import java.util.List;
 
 public class TaskListFragment extends Fragment {
 
+    public static final String EXTRA_NUMBER = "extra number";
     private RecyclerView mRecyclerView;
     private Button mButton;
     private String name;
@@ -43,14 +46,12 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mRepository = TaskRepository.getInstance();
-
         name = getActivity().getIntent().
                 getStringExtra(TaskDetailFragment.EXTRA_USER_NAME);
         number = (int) getActivity().getIntent().
                 getIntExtra(TaskDetailFragment.EXTRA_NUMBER_OF_TASKS, 0);
 
-        mRepository.setDetail(name, number);
+        mRepository = TaskRepository.getInstance(number, name);
     }
 
     @Override
@@ -83,14 +84,21 @@ public class TaskListFragment extends Fragment {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Task task = new Task();
-                task.setName(name);
-                mRepository.getTasks().add(task);
+                mRepository.addTask();
                 taskAdapter.notifyItemInserted(++number);
 
             }
         });
+//        Intent intent = new Intent();
+//        intent.putExtra(EXTRA_NUMBER, number);
+//        getActivity().setResult(Activity.RESULT_OK,intent);
+        mRepository.setNumber(number);
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+      //  mRepository.setNumber(number);
     }
 
     private void setListeners() {

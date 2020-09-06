@@ -10,30 +10,41 @@ public class TaskRepository {
     public static TaskRepository sInstance;
 
     private List<Task> mTasks;
-    private static String mUserName;
-    private static int mNumber;
+    private static String sUserName;
+    private static int sNumber;
 
-    public static TaskRepository getInstance(){
+    public static TaskRepository getInstance(int initialNum, String userName){
         if(sInstance == null)
-            sInstance = new TaskRepository();
+            sInstance = new TaskRepository(initialNum, userName);
 
         return sInstance;
     }
 
-    private TaskRepository(){
+    private TaskRepository(int initialNum, String userName){
+        sUserName = userName;
         mTasks = new ArrayList<>();
-    }
 
-    public void setDetail(String userName , int number){
-        mUserName = userName;
-        mNumber = number;
-
-        for (int i = 0; i < mNumber; i++) {
+        for (int i = 0; i < initialNum; i++) {
             Task task = new Task();
-            task.setName(mUserName);
+            task.setName(sUserName);
 
             mTasks.add(task);
         }
+    }
+
+    public int getNumber() {
+        return sNumber;
+    }
+
+    public void setNumber(int number) {
+        sNumber = number;
+    }
+
+    public void addTask(){
+        Task task = new Task();
+        task.setName(sUserName);
+
+        mTasks.add(task);
     }
 
     public List<Task> getTasks() {
